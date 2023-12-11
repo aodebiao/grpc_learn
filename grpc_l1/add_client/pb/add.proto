@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option go_package = "test/pb";
+
+package pb;
+
+
+service AddServer {
+    rpc Add(AddRequest) returns (AddResponse);
+}
+
+
+message AddRequest{
+    int32 x = 1;
+    int32 y = 2;
+}
+
+message AddResponse{
+    int32 result = 1;
+}
+
