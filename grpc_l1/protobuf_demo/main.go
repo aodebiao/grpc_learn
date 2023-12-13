@@ -3,7 +3,10 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"github.com/iancoleman/strcase"
+	fieldmask_utils "github.com/mennanov/fieldmask-utils"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 	"protobuf_demo/api"
 )
@@ -88,10 +91,35 @@ func optionalDemo() {
 	fmt.Println("optional value is ", *book.PriceOptional)
 }
 
+// fieldMaskDemo 部分更新实例
+// 使用fieldMask更新实例
+func fieldMaskDemo() {
+	// client
+	paths := []string{"price", "info.b", "author"} // 更新字段的路径信息
+	req := api.UpdateBookRequest{
+		Op: "熊二",
+		Book: &api.Book{
+			Author: "熊大",
+			Price:  &wrapperspb.Int64Value{Value: 8800},
+			Info:   &api.Book_Info{B: "bbbb"},
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: paths},
+	}
+
+	// server
+	mask, _ := fieldmask_utils.MaskFromProtoFieldMask(req.UpdateMask, strcase.ToCamel)
+	fmt.Printf("mask value : %v\n", mask.String())
+	var bookDst = make(map[string]any)
+	_ = fieldmask_utils.StructToMap(mask, req.Book, bookDst)
+	fmt.Printf("bookDst: %#v", bookDst)
+
+}
+
 func main() {
 	oneofDemo()
 	wrapValueDemo()
 	optionalDemo()
+	fieldMaskDemo()
 }
 
 // 发送通知相关的功能函数
