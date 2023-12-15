@@ -39,7 +39,7 @@ func NewGreeterClient(cc grpc.ClientConnInterface) GreeterClient {
 }
 
 func (c *greeterClient) LotsOfReplies(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (Greeter_LotsOfRepliesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Greeter_ServiceDesc.Streams[0], "/pb.Greeter/LotsOfReplies", opts...)
+	stream, err := c.cc.NewStream(ctx, &Greeter_ServiceDesc.Streams[0], "/proto.Greeter/LotsOfReplies", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (x *greeterLotsOfRepliesClient) Recv() (*HelloResponse, error) {
 }
 
 func (c *greeterClient) LotsOfGreetings(ctx context.Context, opts ...grpc.CallOption) (Greeter_LotsOfGreetingsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Greeter_ServiceDesc.Streams[1], "/pb.Greeter/LotsOfGreetings", opts...)
+	stream, err := c.cc.NewStream(ctx, &Greeter_ServiceDesc.Streams[1], "/proto.Greeter/LotsOfGreetings", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +105,7 @@ func (x *greeterLotsOfGreetingsClient) CloseAndRecv() (*HelloResponse, error) {
 }
 
 func (c *greeterClient) BidiHello(ctx context.Context, opts ...grpc.CallOption) (Greeter_BidiHelloClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Greeter_ServiceDesc.Streams[2], "/pb.Greeter/BidiHello", opts...)
+	stream, err := c.cc.NewStream(ctx, &Greeter_ServiceDesc.Streams[2], "/proto.Greeter/BidiHello", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -251,7 +251,7 @@ func (x *greeterBidiHelloServer) Recv() (*HelloRequest, error) {
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Greeter_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "pb.Greeter",
+	ServiceName: "proto.Greeter",
 	HandlerType: (*GreeterServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{

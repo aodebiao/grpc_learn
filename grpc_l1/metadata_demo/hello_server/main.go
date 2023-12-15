@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"hello_server_md/pb"
+	"hello_server_md/proto"
 	"log"
 	"net"
 	"strconv"
@@ -14,10 +14,10 @@ import (
 )
 
 type GreeterServer struct {
-	pb.UnimplementedGreeterServer
+	proto.UnimplementedGreeterServer
 }
 
-func (s *GreeterServer) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloResponse, error) {
+func (s *GreeterServer) SayHello(ctx context.Context, req *proto.HelloRequest) (*proto.HelloResponse, error) {
 	// trailer是在请求响应后,发送,所以利用defer
 	defer func() {
 		trailer := metadata.Pairs("timestamp", strconv.Itoa(int(time.Now().Unix())))
@@ -44,7 +44,7 @@ func (s *GreeterServer) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb
 		"location": "chengdu",
 	})
 	grpc.SendHeader(ctx, header)
-	return &pb.HelloResponse{Reply: reply}, nil
+	return &proto.HelloResponse{Reply: reply}, nil
 }
 
 func main() {
@@ -53,7 +53,7 @@ func main() {
 		log.Fatalf("listen error:%v", err)
 	}
 	server := grpc.NewServer()
-	pb.RegisterGreeterServer(server, &GreeterServer{})
+	proto.RegisterGreeterServer(server, &GreeterServer{})
 	err = server.Serve(listen)
 	if err != nil {
 		log.Fatalf("server start error:%v", err)

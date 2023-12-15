@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package pb;
 
-option go_package = "stream_hello_client/pb";
+option go_package = "stream_hello_client/proto";
 
 
 service Greeter {

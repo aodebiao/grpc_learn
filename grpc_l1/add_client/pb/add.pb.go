@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.28.1
 // 	protoc        v4.23.3
-// source: pb/add.proto
+// source: proto/add.proto
 
 package pb
 
@@ -152,12 +152,12 @@ func file_pb_add_proto_rawDescGZIP() []byte {
 
 var file_pb_add_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_pb_add_proto_goTypes = []interface{}{
-	(*AddRequest)(nil),  // 0: pb.AddRequest
-	(*AddResponse)(nil), // 1: pb.AddResponse
+	(*AddRequest)(nil),  // 0: proto.AddRequest
+	(*AddResponse)(nil), // 1: proto.AddResponse
 }
 var file_pb_add_proto_depIdxs = []int32{
-	0, // 0: pb.AddServer.Add:input_type -> pb.AddRequest
-	1, // 1: pb.AddServer.Add:output_type -> pb.AddResponse
+	0, // 0: proto.AddServer.Add:input_type -> proto.AddRequest
+	1, // 1: proto.AddServer.Add:output_type -> proto.AddResponse
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

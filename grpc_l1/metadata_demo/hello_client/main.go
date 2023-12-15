@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
-	"hello_client_md/pb"
+	"hello_client_md/proto"
 	"log"
 	"time"
 )
@@ -22,7 +22,7 @@ func main() {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	client := pb.NewGreeterClient(dial)
+	client := proto.NewGreeterClient(dial)
 	// 携带metadata
 	md := metadata.Pairs(
 		"token", "app-test-aodeibiao",
@@ -30,7 +30,7 @@ func main() {
 	ctx = metadata.NewOutgoingContext(ctx, md)
 	var header, trailer metadata.MD
 	// 接收header 和trailer的metadata
-	hello, err := client.SayHello(ctx, &pb.HelloRequest{
+	hello, err := client.SayHello(ctx, &proto.HelloRequest{
 		Name: *name,
 	}, grpc.Header(&header), grpc.Trailer(&trailer))
 	if err != nil {

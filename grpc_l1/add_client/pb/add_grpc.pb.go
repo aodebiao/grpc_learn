@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v4.23.3
-// source: pb/add.proto
+// source: proto/add.proto
 
 package pb
 
@@ -35,7 +35,7 @@ func NewAddServerClient(cc grpc.ClientConnInterface) AddServerClient {
 
 func (c *addServerClient) Add(ctx context.Context, in *AddRequest, opts ...grpc.CallOption) (*AddResponse, error) {
 	out := new(AddResponse)
-	err := c.cc.Invoke(ctx, "/pb.AddServer/Add", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/proto.AddServer/Add", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func _AddServer_Add_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.AddServer/Add",
+		FullMethod: "/proto.AddServer/Add",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AddServerServer).Add(ctx, req.(*AddRequest))
@@ -92,7 +92,7 @@ func _AddServer_Add_Handler(srv interface{}, ctx context.Context, dec func(inter
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AddServer_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "pb.AddServer",
+	ServiceName: "proto.AddServer",
 	HandlerType: (*AddServerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -101,5 +101,5 @@ var AddServer_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "pb/add.proto",
+	Metadata: "proto/add.proto",
 }

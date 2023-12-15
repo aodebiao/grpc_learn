@@ -3,8 +3,11 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
 	"log"
 	"test/proto"
 	"time"
@@ -30,6 +33,16 @@ func main() {
 	defer cancel()
 	resp, err := c.SayHello(ctx, &proto.HelloRequest{Name: *name})
 	if err != nil {
+		// 收到带detail的error
+		s := status.Convert(err)
+		for _, d := range s.Details() {
+			switch info := d.(type) {
+			case *errdetails.QuotaFailure:
+				fmt.Printf("QuotaFailure:%s\n", info)
+			default:
+				fmt.Printf("unexpected type:%v\n", err)
+			}
+		}
 		log.Printf("c.SayHello failed,err:%v", err)
 		return
 	}

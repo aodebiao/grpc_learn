@@ -1,7 +1,9 @@
 syntax = "proto3";
 package pb;
 
-option go_package = "hello_client_md/pb";
+// /后的proto需要和此文件所在目录名保持一致? 不然在使用proto.Greeter时,找不到
+// 同时也需要和服务端保持一致
+option go_package = "hello_client_md/proto";
 
 service Greeter {
     rpc SayHello(HelloRequest)returns (HelloResponse);

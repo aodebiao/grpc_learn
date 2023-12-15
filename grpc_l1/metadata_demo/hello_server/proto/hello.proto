@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package pb;
 
-option go_package = "hello_server_md/pb";
+option go_package = "hello_server_md/proto";
 
 
 service Greeter {
