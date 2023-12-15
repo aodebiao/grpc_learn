@@ -6,6 +6,7 @@ import (
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
 	"hello_server/pb"
 	"log"
@@ -54,6 +55,28 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 }
 
 func main() {
+	// 启动服务
+	l, err := net.Listen("tcp", ":8972")
+	if err != nil {
+		log.Fatal("failed to listen,err:", err)
+	}
+	creds, err := credentials.NewServerTLSFromFile("certs/server.crt", "certs/server.key")
+	if err != nil {
+		log.Fatalf("load certs error:%v", err)
+	}
+
+	s := grpc.NewServer(grpc.Creds(creds)) // 创建 grpc服务
+	// 注册服务
+	pb.RegisterGreeterServer(s, &server{count: make(map[string]int)})
+	// 启动服务
+	err = s.Serve(l)
+	if err != nil {
+		log.Fatal("failed to serve,err:", err)
+	}
+}
+
+// 不安全的连接
+func insecureConn() {
 	// 启动服务
 	l, err := net.Listen("tcp", ":8972")
 	if err != nil {
