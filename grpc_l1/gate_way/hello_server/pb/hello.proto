@@ -1,0 +1,22 @@
+syntax = "proto3";
+package pb;
+option go_package = "way_server1/pb";
+import "google/api/annotations.proto";
+
+// 使用grpc-gateWay生成http服务
+service Greeter {
+    rpc SayHello(HelloRequest) returns (HelloResponse){
+        option (google.api.http) = {
+            post:"/v1/example/echo"
+            body:"*"
+        };
+    }
+}
+
+message HelloRequest {
+    string name = 1;
+}
+
+message HelloResponse {
+    string reply = 1;
+}
