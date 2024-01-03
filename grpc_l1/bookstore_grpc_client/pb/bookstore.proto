@@ -1,0 +1,139 @@
+syntax = "proto3";
+
+
+package bookstore;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+option go_package = "bookstore_grpc_client/pb";
+
+service BookStore {
+    // 返回所有书架列表
+    rpc ListShelves (google.protobuf.Empty) returns (ListShelvesResponse){
+        // 定义http映射
+        option (google.api.http) ={
+            get:"/v1/shelves",
+        };
+    }
+
+    // 创建新书架
+    rpc CreateShelf(CreateShelfRequest) returns (Shelf){
+        option (google.api.http) = {
+            post:"/v1/shelves",
+            body: "shelf"
+        };
+    }
+
+    // 返回指定的书架信息
+    rpc GetShelf(GetShelfRequest) returns (Shelf){
+        option (google.api.http) = {
+            get:"/v1/shelves/{shelf}"
+        };
+    }
+
+    // 删除书架,包括上面的所有图书
+    rpc DeleteShelf(DeleteShelfRequest) returns (google.protobuf.Empty){
+        option (google.api.http) = {
+            delete: "/v1/shelves/{shelf}"
+        };
+    }
+
+    // 返回书架上的图书列表
+    rpc ListBooks(ListBookRequest) returns (ListBookResponse){
+        option (google.api.http) = {
+            get: "/v1/shelves/{shelf}/books"
+        };
+    };
+
+    // 创建一本新图书
+    rpc CreateBook(CreateBookRequest) returns (Book){
+        option (google.api.http) = {
+            post: "/v1/shelves/{shelf}/books"
+            body: "book"
+        };
+    };
+
+    // 返回特定图书
+    rpc GetBook(GetBookRequest) returns (Book){
+        option (google.api.http) = {
+            get: "/v1/shelves/{shelf}/books/{book}"
+        };
+    };
+
+    rpc DeleteBook(DeleteBookRequest) returns (google.protobuf.Empty){
+        option (google.api.http) = {
+            delete: "/v1/shelves/{shelf}/books/{book}"
+        };
+    };
+}
+
+
+
+// 书架资源
+message Shelf {
+    // 书架id
+    int64 id = 1;
+    // 书架上的主题
+    string theme = 2;
+    // 书架的大小
+    int64 size = 3;
+}
+
+message Book {
+    // 图书id
+    int64 id = 1;
+    // 图书作者
+    string author = 2;
+    // 书名
+    string title = 3;
+}
+
+message ListShelvesResponse {
+    // 书店里的书架
+    repeated Shelf shelves = 1;
+}
+
+message CreateShelfRequest {
+    // 要创建的书架信息
+    Shelf shelf = 1;
+}
+
+message GetShelfRequest {
+    // 检索的书架id
+    int64 shelf = 1;
+}
+
+message DeleteShelfRequest {
+    // 要删除的书架id
+    int64 shelf = 1;
+}
+
+message ListBookRequest {
+    int64 shelf = 1;
+    string page_token = 2;
+}
+
+message ListBookResponse {
+    repeated Book books = 1;
+    string next_page_token = 2;
+}
+
+message CreateBookRequest {
+    // 指定图书书架
+    int64 shelf = 1;
+    // 待创建的书籍信息
+    Book book = 2;
+}
+
+message GetBookRequest {
+    // 书架id
+    int64 shelf = 1;
+    // 图书id
+    int64 book = 2;
+}
+
+message DeleteBookRequest {
+    int64 shelf = 1;
+    int64 book = 2;
+}
