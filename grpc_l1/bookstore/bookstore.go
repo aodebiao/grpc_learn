@@ -148,6 +148,8 @@ func (s *server) ListBooks(ctx context.Context, in *pb.ListBookRequest) (*pb.Lis
 	}
 	return &pb.ListBookResponse{Books: res, NextPageToken: nextPageToken}, nil
 }
+
+// todo实现其它接口
 func (s *server) CreateBook(ctx context.Context, in *pb.CreateBookRequest) (*pb.Book, error) {
 
 	return nil, nil
