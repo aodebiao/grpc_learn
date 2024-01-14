@@ -12,7 +12,7 @@ const (
 	myEndpoint = "resolver.aodeibiao.com"
 )
 
-var addrs = []string{"127.0.0.1:8991", "127.0.0.1:8080"}
+var addrs = []string{"127.0.0.1:8881", "127.0.0.1:8882"}
 
 // aodebiaoResolver 自定义name resolver，实现Resolver接口
 

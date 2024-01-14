@@ -16,10 +16,18 @@ var port = flag.String("p", "8991", "")
 
 func main() {
 	flag.Parse()
+	// 自定义解析
+	//conn, err := grpc.Dial("aodeibiao:///resolver.aodeibiao.com",
+	//	grpc.WithTransportCredentials(insecure.NewCredentials()),
+	//	//grpc.WithResolvers(&aodebiaoResolverBuilder{}), // 指定使用q1miResolverBuilder
+	//)
+	// 自定义解析 + 轮询的负载均衡
 	conn, err := grpc.Dial("aodeibiao:///resolver.aodeibiao.com",
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy":"round_robin"}`),
 		//grpc.WithResolvers(&aodebiaoResolverBuilder{}), // 指定使用q1miResolverBuilder
 	)
+
 	if err != nil {
 		log.Fatalf("dial 127.0.0.1:8991 error:%v\n", err)
 		return
