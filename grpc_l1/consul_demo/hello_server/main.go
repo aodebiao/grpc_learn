@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"github.com/hashicorp/consul/api"
 	"google.golang.org/grpc"
@@ -25,8 +26,11 @@ func (s *server) SayHello(ctx context.Context, req *pb.HelloRequest) (resp *pb.H
 
 const serverName = "hello_server"
 
+var port = flag.String("port", "8888", "-port")
+
 func main() {
-	listen, err := net.Listen("tcp", ":7777")
+	flag.Parse()
+	listen, err := net.Listen("tcp", fmt.Sprintf(":%s", *port))
 	if err != nil {
 		log.Fatalf("err:%v", err)
 		return
