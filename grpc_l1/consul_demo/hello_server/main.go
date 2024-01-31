@@ -11,6 +11,9 @@ import (
 	"hello_server/pb"
 	"log"
 	"net"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 type server struct {
@@ -30,7 +33,9 @@ var port = flag.String("port", "8888", "-port")
 
 func main() {
 	flag.Parse()
-	listen, err := net.Listen("tcp", fmt.Sprintf(":%s", *port))
+	addr := fmt.Sprintf(":%s", *port)
+	fmt.Println("addr:", addr)
+	listen, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalf("err:%v", err)
 		return
@@ -59,15 +64,18 @@ func main() {
 	// 将服务注册到consul
 	// 1.定义服务信息
 	// 配置健康检查策略,告诉consul如何进行健康检查
+	checkAddr := fmt.Sprintf("%s:%s", ipinfo.String(), *port)
+	fmt.Println("checkAddr:", checkAddr)
 	check := &api.AgentServiceCheck{
-		GRPC:                           fmt.Sprintf("%s:%d", ipinfo.String(), 7777),
+		GRPC:                           checkAddr,
 		Timeout:                        "5s",
 		Interval:                       "5s",
-		DeregisterCriticalServiceAfter: "40s", // 失败后超过40s ,取消注册
+		DeregisterCriticalServiceAfter: "1m", // 1分钟后(最小时间) ,取消注册
 	}
+	serviceID := fmt.Sprintf("%s-%s-%d", serverName, ipinfo.String(), port)
 
 	srv := &api.AgentServiceRegistration{
-		ID:      fmt.Sprintf("%s-%s-%d", serverName, ipinfo.String(), 7777),
+		ID:      serviceID,
 		Name:    serverName,
 		Tags:    []string{"aodeibiao"},
 		Port:    8888,
@@ -77,12 +85,23 @@ func main() {
 	// 2.注册到consul
 	cc.Agent().ServiceRegister(srv)
 	// 启动服务
-	err = grpcServer.Serve(listen)
-	if err != nil {
-		log.Fatalf("err:%v", err)
-		return
-	}
 
+	go func() {
+		err := grpcServer.Serve(listen)
+		if err != nil {
+			log.Fatalf("err:%v", err)
+			return
+		}
+	}()
+
+	quit := make(chan os.Signal)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT, syscall.SIGKILL)
+	fmt.Println("wait quit signal....")
+	<-quit
+	fmt.Println("service out")
+	if err := cc.Agent().ServiceDeregister(serviceID); err != nil {
+		log.Fatalf("err:%v", err)
+	}
 }
 
 func GetOutboundIP() (net.IP, error) {
