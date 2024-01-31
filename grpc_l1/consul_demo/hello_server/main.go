@@ -13,15 +13,17 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 )
 
 type server struct {
 	pb.UnimplementedGreeterServer
+	addr string
 }
 
 func (s *server) SayHello(ctx context.Context, req *pb.HelloRequest) (resp *pb.HelloResponse, err error) {
-	reply := fmt.Sprintf("hello,%s", req.Name)
+	reply := fmt.Sprintf("%s hello,%s", s.addr, req.Name)
 	log.Printf("收到客户端:%s的问候", req.Name)
 	return &pb.HelloResponse{Reply: reply}, nil
 
@@ -43,7 +45,13 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 	// 注册服务
-	pb.RegisterGreeterServer(grpcServer, &server{})
+	// 获取本机出口ip
+	ipinfo, err := GetOutboundIP()
+	if err != nil {
+		log.Fatalf("获取ip失败,err:%v", err)
+		return
+	}
+	pb.RegisterGreeterServer(grpcServer, &server{addr: fmt.Sprintf("%s:%s", ipinfo.String(), *port)})
 	// 注册健康检查,增加健康检查的处理逻辑
 	// consul发来健康检查请求时,这个负责处理
 	healthpb.RegisterHealthServer(grpcServer, health.NewServer())
@@ -54,12 +62,7 @@ func main() {
 		log.Fatalf("err:%v", err)
 		return
 	}
-	// 获取本机出口ip
-	ipinfo, err := GetOutboundIP()
-	if err != nil {
-		log.Fatalf("获取ip失败,err:%v", err)
-		return
-	}
+
 	log.Printf("获取到的ip:%s", ipinfo.String())
 	// 将服务注册到consul
 	// 1.定义服务信息
@@ -72,13 +75,13 @@ func main() {
 		Interval:                       "5s",
 		DeregisterCriticalServiceAfter: "1m", // 1分钟后(最小时间) ,取消注册
 	}
-	serviceID := fmt.Sprintf("%s-%s-%d", serverName, ipinfo.String(), port)
-
+	serviceID := fmt.Sprintf("%s-%s-%s", serverName, ipinfo.String(), *port)
+	p, _ := strconv.Atoi(*port)
 	srv := &api.AgentServiceRegistration{
 		ID:      serviceID,
 		Name:    serverName,
 		Tags:    []string{"aodeibiao"},
-		Port:    8888,
+		Port:    p,
 		Address: "127.0.0.1",
 		Check:   check,
 	}

@@ -39,7 +39,10 @@ func main() {
 
 		// 4.发起rpc调用
 	*/
-	conn, err := grpc.Dial("consul://localhost:8500/hello_server", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial("consul://localhost:8500/hello_server",
+		//round_robin 作为负载策略
+		grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy":"round_robin"}`),
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("err:%v", err)
 		return
@@ -47,14 +50,18 @@ func main() {
 	defer conn.Close()
 
 	client := pb.NewGreeterClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	resp, err := client.SayHello(ctx, &pb.HelloRequest{Name: *name})
-	if err != nil {
-		log.Fatalf("err:%v", err)
-		return
+
+	for i := 0; i < 10; i++ {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+		resp, err := client.SayHello(ctx, &pb.HelloRequest{Name: *name})
+		if err != nil {
+			log.Fatalf("err:%v", err)
+			return
+		}
+		log.Printf("收到服务端回复:%s", resp.Reply)
+
 	}
-	log.Printf("收到服务端回复:%s", resp.Reply)
 
 }
 
