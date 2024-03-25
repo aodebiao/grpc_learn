@@ -39,7 +39,7 @@ func main() {
 
 		// 4.发起rpc调用
 	*/
-	conn, err := grpc.Dial("consul://localhost:8500/hello_server",
+	conn, err := grpc.Dial("consul://localhost:8500/hello_server?healthy=true",
 		//round_robin 作为负载策略
 		grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy":"round_robin"}`),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
