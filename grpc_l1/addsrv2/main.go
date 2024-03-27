@@ -4,10 +4,12 @@ import (
 	"addsrv2/pb"
 	"flag"
 	"fmt"
+	"github.com/go-kit/kit/log"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 	"net"
 	"net/http"
+	"os"
 )
 
 var (
@@ -26,7 +28,8 @@ func main() {
 			return err
 		}
 		defer httpListener.Close()
-		httpHandler := NewHttpServer(srv)
+		logger := log.NewLogfmtLogger(os.Stdout)
+		httpHandler := NewHttpServer(srv, logger)
 		return http.Serve(httpListener, httpHandler)
 	})
 	g.Go(func() error {

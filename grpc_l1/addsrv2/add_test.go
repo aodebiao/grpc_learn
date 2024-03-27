@@ -61,7 +61,7 @@ func TestSum(t *testing.T) {
 // 原始的单元测试
 func TestSum1(t *testing.T) {
 	// 建立连接
-	conn, err := grpc.DialContext(context.Background(), "127.0.0.1:8090", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.DialContext(context.Background(), "127.0.0.1:8972", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		t.Fail()
 	}

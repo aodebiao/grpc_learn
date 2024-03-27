@@ -4,6 +4,7 @@ import (
 	"addsrv2/pb"
 	"context"
 	"errors"
+	"github.com/go-kit/kit/log"
 	grpctransport "github.com/go-kit/kit/transport/grpc"
 )
 
@@ -63,4 +64,9 @@ func (receiver grpcServer) Concat(ctx context.Context, request *pb.ConcatRequest
 		return nil, err
 	}
 	return resp.(*pb.ConcatResponse), nil
+}
+
+type LogMiddleware struct {
+	log  log.Logger
+	next AddService
 }

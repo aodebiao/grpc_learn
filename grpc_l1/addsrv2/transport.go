@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/go-kit/kit/log"
 	grpctransport "github.com/go-kit/kit/transport/grpc"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"net/http"
@@ -37,8 +38,13 @@ func encodeResponse(ctx context.Context, w http.ResponseWriter, response interfa
 	return json.NewEncoder(w).Encode(response)
 }
 
-func NewHttpServer(svc AddService) http.Handler {
-	sumHandler := httptransport.NewServer(makeSumEndpoint(svc), decodeSumRequest, encodeResponse)
+func NewHttpServer(svc AddService, logger log.Logger) http.Handler {
+
+	sum := makeSumEndpoint(svc)
+
+	//  middleware 是个函数
+	middleware := logMiddleware(log.With(logger, "method", "sum"))
+	sumHandler := httptransport.NewServer(middleware(sum), decodeSumRequest, encodeResponse)
 	concatHandler := httptransport.NewServer(makeConcatEndpoint(svc), decodeConcatRequest, encodeResponse)
 	//http.Handle("/sum", sumHandler)
 	//http.Handle("/concat", concatHandler)
